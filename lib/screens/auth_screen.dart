@@ -48,7 +48,7 @@ class _AuthScreenState extends State<AuthScreen> {
         builder: (context) => AlertDialog(
           content: Text(message),
           actions: [
-            FlatButton(
+            TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },

@@ -1,10 +1,44 @@
+import 'package:firebase_chat/widgets/chat/messages.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ChatScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('FlutterChat'),
+        actions: [
+          DropdownButton(
+            icon: Icon(
+              Icons.more_vert,
+              color: Theme.of(context).primaryIconTheme.color,
+            ),
+            items: [
+              DropdownMenuItem(
+                child: Container(
+                  child: Row(
+                    children: [
+                      Icon(Icons.exit_to_app),
+                      SizedBox(
+                        width: 8,
+                      ),
+                      Text('Logout'),
+                    ],
+                  ),
+                ),
+                value: 'logout',
+              ),
+            ],
+            onChanged: (itemIdentifier) {
+              if (itemIdentifier == 'logout') {
+                FirebaseAuth.instance.signOut();
+              }
+            },
+          )
+        ],
+      ),
       body: StreamBuilder(
         stream: FirebaseFirestore.instance
             .collection('chats/Db77eWPZkpnfbLYexK9Q/messages')
@@ -15,16 +49,13 @@ class ChatScreen extends StatelessWidget {
               child: CircularProgressIndicator(),
             );
           }
-          final document = streamSnapshot.data.docs;
-          return ListView.builder(
-            itemCount: document.length,
-            itemBuilder: (ctx, index) => Container(
-              child: Padding(
-                padding: EdgeInsets.all(8),
-                child: Text(
-                  document[index]['text'],
+          return Container(
+            child: Column(
+              children: [
+                Expanded(
+                  child: Messages(),
                 ),
-              ),
+              ],
             ),
           );
         },
