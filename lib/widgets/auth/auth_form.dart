@@ -1,6 +1,17 @@
 import 'package:flutter/material.dart';
 
 class AuthForm extends StatefulWidget {
+  final Future<void> Function(
+    String email,
+    String password,
+    String userName,
+    bool isLogin,
+  ) submitFn;
+
+  AuthForm(
+    this.submitFn,
+  );
+
   @override
   _AuthFormState createState() => _AuthFormState();
 }
@@ -11,17 +22,25 @@ class _AuthFormState extends State<AuthForm> {
   String _userEmail = '';
   String _userName = '';
   String _userPassword = '';
+  var _showSpinner = false;
 
-  void _trySubmit() {
+  void _trySubmit() async {
     final isValid = _formKey.currentState.validate();
     FocusScope.of(context).unfocus();
     if (isValid) {
       _formKey.currentState.save();
-      print(_userEmail);
-      print(_userName);
-      print(_userPassword);
-      //send request to firebase
-
+      setState(() {
+        _showSpinner = true;
+      });
+      await widget.submitFn(
+        _userEmail.trim(),
+        _userPassword.trim(),
+        _userName.trim(),
+        _isLogin,
+      );
+      setState(() {
+        _showSpinner = false;
+      });
     }
   }
 
@@ -87,7 +106,7 @@ class _AuthFormState extends State<AuthForm> {
                   ),
                   ElevatedButton(
                     onPressed: _trySubmit,
-                    child: Text(_isLogin ? 'Login' : 'Sing up'),
+                    child: Text(_isLogin ? 'Login' : 'Sign up'),
                   ),
                   TextButton(
                     onPressed: () {
